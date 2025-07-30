@@ -31,7 +31,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye,
   faEyeSlash,
-  faUserCircle,
 } from "@fortawesome/free-regular-svg-icons";
 import { faFacebook, faGoogle } from "@fortawesome/free-brands-svg-icons";
 // import { Textarea } from "@/components/ui/textarea";
@@ -88,6 +87,33 @@ const UserAccountPage: React.FC = () => {
     totalOrders: 18,
     totalSpent: 2847.5,
   });
+
+  const navigationItems = [
+    {
+      id: "profile",
+      label: "Personal Information",
+      mobileLabel: "Profile",
+      icon: UserCircle,
+    },
+    {
+      id: "orders",
+      label: "Order History",
+      mobileLabel: "Orders",
+      icon: ShoppingBag,
+    },
+    {
+      id: "addresses",
+      label: "Saved Addresses",
+      mobileLabel: "Addresses",
+      icon: MapPin,
+    },
+    {
+      id: "settings",
+      label: "Account Settings",
+      mobileLabel: "Settings",
+      icon: Cog,
+    },
+  ];
 
   const orders: Order[] = [
     {
@@ -577,7 +603,7 @@ const UserAccountPage: React.FC = () => {
                   {userProfile.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm font-semibold text-slate-900">
+              <span className="hidden sm:inline text-sm font-semibold text-slate-900">
                 {userProfile.name}
               </span>
               <Button
@@ -594,8 +620,9 @@ const UserAccountPage: React.FC = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
-          <div className="w-72 flex-shrink-0">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar Navigation (LG and up) */}
+          <div className="w-72 flex-shrink-0 hidden lg:block">
             <Card className="sticky top-24 shadow-lg border-0 bg-white/90 backdrop-blur-sm">
               <CardContent className="p-0">
                 <div className="p-6 border-b border-slate-100">
@@ -620,28 +647,7 @@ const UserAccountPage: React.FC = () => {
                   </div>
                 </div>
                 <nav className="p-3">
-                  {[
-                    {
-                      id: "profile",
-                      label: "Personal Information",
-                      icon: faUserCircle,
-                    },
-                    {
-                      id: "orders",
-                      label: "Order History",
-                      icon: ShoppingBag,
-                    },
-                    {
-                      id: "addresses",
-                      label: "Saved Addresses",
-                      icon: MapPin,
-                    },
-                    {
-                      id: "settings",
-                      label: "Account Settings",
-                      icon: Cog,
-                    },
-                  ].map((item) => (
+                  {navigationItems.map((item) => (
                     <Button
                       key={item.id}
                       variant={activeSection === item.id ? "default" : "ghost"}
@@ -652,7 +658,7 @@ const UserAccountPage: React.FC = () => {
                       }`}
                       onClick={() => setActiveSection(item.id)}
                     >
-                      <i className={`fas ${item.icon} mr-3 text-base`}></i>
+                      <item.icon className="mr-3 h-5 w-5" />
                       {item.label}
                     </Button>
                   ))}
@@ -662,8 +668,30 @@ const UserAccountPage: React.FC = () => {
           </div>
 
           <div className="flex-1">
+            {/* Mobile Navigation (hidden on LG and up) */}
+            <div className="lg:hidden mb-8">
+              <div className="border-b border-slate-200">
+                <nav className="-mb-px flex space-x-6 overflow-x-auto">
+                  {navigationItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveSection(item.id)}
+                      className={`whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm flex items-center transition-colors duration-200 ${
+                        activeSection === item.id
+                          ? "border-indigo-600 text-indigo-600"
+                          : "border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-800"
+                      }`}
+                    >
+                      <item.icon className="mr-2 h-5 w-5" />
+                      {item.mobileLabel}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+            </div>
+
             <div className="mb-10">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-3">
+              <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-3">
                 Welcome back, {userProfile.name.split(" ")[0]}!
               </h1>
               <p className="text-slate-600 text-lg">
@@ -732,7 +760,7 @@ const UserAccountPage: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-8">
-                  <div className="flex items-center space-x-8">
+                  <div className="flex flex-col sm:flex-row items-center text-center sm:text-left space-y-6 sm:space-y-0 sm:space-x-8">
                     <Avatar className="w-28 h-28 ring-4 ring-indigo-100">
                       <AvatarImage
                         src={userProfile.avatar}
@@ -832,9 +860,9 @@ const UserAccountPage: React.FC = () => {
             {activeSection === "orders" && (
               <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
+                  <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center text-xl">
-                      <i className="fas fa-shopping-bag mr-3 text-indigo-600"></i>
+                      <ShoppingBag className="mr-3 text-indigo-600" />
                       Order History
                     </div>
                     <Button
@@ -851,11 +879,11 @@ const UserAccountPage: React.FC = () => {
                     {orders.map((order) => (
                       <div
                         key={order.id}
-                        className="border border-slate-200 rounded-2xl p-6 hover:shadow-lg transition-all bg-gradient-to-r from-white to-slate-50"
+                        className="border border-slate-200 rounded-2xl p-4 sm:p-6 hover:shadow-lg transition-all bg-gradient-to-r from-white to-slate-50"
                       >
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                           <div className="flex items-center space-x-5">
-                            <div className="w-16 h-16 rounded-xl overflow-hidden ring-2 ring-slate-100">
+                            <div className="w-16 h-16 rounded-xl overflow-hidden ring-2 ring-slate-100 flex-shrink-0">
                               <img
                                 src={order.image}
                                 alt="Order"
@@ -871,7 +899,7 @@ const UserAccountPage: React.FC = () => {
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-6">
+                          <div className="flex flex-row sm:flex-col md:flex-row items-end sm:items-end md:items-center gap-x-6 gap-y-3 w-full sm:w-auto justify-between">
                             <Badge
                               className={`${getStatusColor(
                                 order.status
@@ -912,7 +940,7 @@ const UserAccountPage: React.FC = () => {
             {activeSection === "addresses" && (
               <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
+                  <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center text-xl">
                       <MapPin className="mr-3 text-indigo-600" />
                       Saved Addresses
@@ -925,67 +953,67 @@ const UserAccountPage: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {addresses.map((address) => (
-                      <div
-                        key={address.id}
-                        className="border border-slate-200 rounded-2xl p-6 relative bg-gradient-to-br from-white to-slate-50 hover:shadow-lg transition-shadow"
-                      >
-                        {address.isDefault && (
-                          <Badge className="absolute top-4 right-4 bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold">
-                            Default
-                          </Badge>
-                        )}
-                        <div className="flex items-start space-x-4">
-                          <div
-                            className={`p-3 rounded-xl shadow-sm ${
-                              address.type === "home"
-                                ? "bg-gradient-to-br from-blue-500 to-indigo-600"
-                                : address.type === "work"
-                                ? "bg-gradient-to-br from-purple-500 to-pink-600"
-                                : "bg-gradient-to-br from-slate-500 to-gray-600"
-                            }`}
-                          >
-                            <i
-                              className={`fas ${
+                    {addresses.map((address) => {
+                      const Icon =
+                        address.type === "home"
+                          ? Home
+                          : address.type === "work"
+                          ? Building
+                          : MapPin;
+                      return (
+                        <div
+                          key={address.id}
+                          className="border border-slate-200 rounded-2xl p-6 relative bg-gradient-to-br from-white to-slate-50 hover:shadow-lg transition-shadow"
+                        >
+                          {address.isDefault && (
+                            <Badge className="absolute top-4 right-4 bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold">
+                              Default
+                            </Badge>
+                          )}
+                          <div className="flex items-start space-x-4">
+                            <div
+                              className={`p-3 rounded-xl shadow-sm ${
                                 address.type === "home"
-                                  ? Home
+                                  ? "bg-gradient-to-br from-blue-500 to-indigo-600"
                                   : address.type === "work"
-                                  ? Building
-                                  : MapPin
-                              } text-white text-lg`}
-                            ></i>
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="font-bold text-slate-900 mb-2 text-lg">
-                              {address.name}
-                            </h4>
-                            <p className="text-sm text-slate-600 leading-relaxed">
-                              {address.street}
-                              <br />
-                              {address.city}, {address.state} {address.zip}
-                            </p>
-                            <div className="flex space-x-3 mt-4">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="!rounded-button whitespace-nowrap cursor-pointer text-xs text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 font-medium"
-                              >
-                                <Edit className="mr-1" />
-                                Edit
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="!rounded-button whitespace-nowrap cursor-pointer text-xs text-red-600 hover:text-red-800 hover:bg-red-50 font-medium"
-                              >
-                                <Trash2 className="mr-1" />
-                                Delete
-                              </Button>
+                                  ? "bg-gradient-to-br from-purple-500 to-pink-600"
+                                  : "bg-gradient-to-br from-slate-500 to-gray-600"
+                              }`}
+                            >
+                              <Icon className="text-white text-lg" />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-bold text-slate-900 mb-2 text-lg">
+                                {address.name}
+                              </h4>
+                              <p className="text-sm text-slate-600 leading-relaxed">
+                                {address.street}
+                                <br />
+                                {address.city}, {address.state} {address.zip}
+                              </p>
+                              <div className="flex space-x-3 mt-4">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="!rounded-button whitespace-nowrap cursor-pointer text-xs text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 font-medium"
+                                >
+                                  <Edit className="mr-1" />
+                                  Edit
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="!rounded-button whitespace-nowrap cursor-pointer text-xs text-red-600 hover:text-red-800 hover:bg-red-50 font-medium"
+                                >
+                                  <Trash2 className="mr-1" />
+                                  Delete
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>
@@ -1030,7 +1058,7 @@ const UserAccountPage: React.FC = () => {
                       <h4 className="font-bold text-slate-900 mb-4 text-lg">
                         Two-Factor Authentication
                       </h4>
-                      <div className="flex items-center justify-between bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-6">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-6">
                         <div>
                           <p className="text-sm text-slate-700 font-medium">
                             Add an extra layer of security to your account
@@ -1041,7 +1069,7 @@ const UserAccountPage: React.FC = () => {
                         </div>
                         <Button
                           variant="outline"
-                          className="!rounded-button whitespace-nowrap cursor-pointer h-11 px-6 border-slate-200 hover:bg-white font-semibold"
+                          className="!rounded-button whitespace-nowrap cursor-pointer h-11 px-6 border-slate-200 hover:bg-white font-semibold flex-shrink-0"
                         >
                           Enable 2FA
                         </Button>
@@ -1077,30 +1105,23 @@ const UserAccountPage: React.FC = () => {
                         description: "Text notifications for important updates",
                         checked: true,
                       },
-                      {
-                        id: "push-notifications",
-                        label: "Push notifications",
-                        description:
-                          "Browser notifications for real-time updates",
-                        checked: true,
-                      },
-                    ].map((pref) => (
-                      <div
-                        key={pref.id}
-                        className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl"
-                      >
+                    ].map((notification) => (
+                      <div key={notification.id} className="flex items-center justify-between">
                         <div>
-                          <label
-                            htmlFor={pref.id}
-                            className="text-sm font-semibold text-slate-900 cursor-pointer"
-                          >
-                            {pref.label}
+                          <label htmlFor={notification.id} className="font-medium">
+                            {notification.label}
                           </label>
-                          <p className="text-xs text-slate-600 mt-1">
-                            {pref.description}
+                          <p className="text-sm text-slate-500">
+                            {notification.description}
                           </p>
                         </div>
-                        <Checkbox id={pref.id} defaultChecked={pref.checked} />
+                        {/* You would replace this with a real switch/toggle component */}
+                        <input
+                          type="checkbox"
+                          id={notification.id}
+                          defaultChecked={notification.checked}
+                          className="h-5 w-5"
+                        />
                       </div>
                     ))}
                   </CardContent>
@@ -1114,7 +1135,7 @@ const UserAccountPage: React.FC = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-5">
-                    {[
+                    {[ // <-- Correct: Use square brackets to define an array
                       {
                         id: "profile-public",
                         label: "Make profile public",
@@ -1134,11 +1155,11 @@ const UserAccountPage: React.FC = () => {
                         description:
                           "Enable personalized recommendations from partners",
                         checked: false,
-                      },
-                    ].map((pref) => (
+                      }
+                    ].map((pref) => ( // <-- Now .map() works correctly on the array
                       <div
                         key={pref.id}
-                        className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl"
+                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl"
                       >
                         <div>
                           <label
@@ -1151,7 +1172,11 @@ const UserAccountPage: React.FC = () => {
                             {pref.description}
                           </p>
                         </div>
-                        <Checkbox id={pref.id} defaultChecked={pref.checked} />
+                        <Checkbox
+                          id={pref.id}
+                          defaultChecked={pref.checked}
+                          className="self-start sm:self-center"
+                        />
                       </div>
                     ))}
                     <div className="border-t border-slate-200 pt-6">
